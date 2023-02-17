@@ -7,32 +7,32 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ru.itmentor.spring.boot_security.demo.models.Role;
 import ru.itmentor.spring.boot_security.demo.models.Users;
 import ru.itmentor.spring.boot_security.demo.repositories.UsersRepository;
 import ru.itmentor.spring.boot_security.demo.security.UsersDetails;
 
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UsersDetailServices implements UserDetailsService {
     private final UsersRepository usersRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UsersDetailServices(UsersRepository usersRepository,  BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UsersDetailServices(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Users> user = usersRepository.findByUsername(username);
-        if(user.isEmpty())
+        if(user.isEmpty()){
             throw new UsernameNotFoundException("User not found!");
-        else
-            return new UsersDetails(user.get());
+        }
+        return new UsersDetails(user.get());
     }
-
 
 }
