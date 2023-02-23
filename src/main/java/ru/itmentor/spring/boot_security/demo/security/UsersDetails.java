@@ -1,10 +1,7 @@
 package ru.itmentor.spring.boot_security.demo.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import ru.itmentor.spring.boot_security.demo.models.Users;
 
 
@@ -29,7 +26,7 @@ public class UsersDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.users.getUsername();
+        return this.users.getEmail();
     }
 
     @Override

@@ -12,8 +12,12 @@ public class Users {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "username")
-    private String username;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "email")
+    private String email;
     @Column(name = "year_of_birth")
     private int yearOfBirth;
     @Column(name ="password")
@@ -21,8 +25,8 @@ public class Users {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    public Users(String username, int yearOfBirth) {
-        this.username = username;
+    public Users(String firstName, int yearOfBirth) {
+        this.firstName = firstName;
         this.yearOfBirth = yearOfBirth;
     }
 
@@ -38,12 +42,12 @@ public class Users {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public int getYearOfBirth() {
@@ -68,5 +72,21 @@ public class Users {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

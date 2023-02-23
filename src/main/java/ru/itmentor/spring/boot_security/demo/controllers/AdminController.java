@@ -1,16 +1,20 @@
 package ru.itmentor.spring.boot_security.demo.controllers;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.itmentor.spring.boot_security.demo.models.Role;
 import ru.itmentor.spring.boot_security.demo.models.Users;
 import ru.itmentor.spring.boot_security.demo.repositories.RoleRepository;
+import ru.itmentor.spring.boot_security.demo.security.UsersDetails;
 import ru.itmentor.spring.boot_security.demo.services.UsersServices;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -18,14 +22,19 @@ public class AdminController {
     private final UsersServices usersServices;
     private final RoleRepository roleRepository;
 
+
     public AdminController(UsersServices usersServices, RoleRepository roleRepository) {
         this.usersServices = usersServices;
         this.roleRepository = roleRepository;
     }
 
-    @GetMapping("")
-    public String getAllUsers(Model model) {
-        model.addAttribute("users", usersServices.findAllUsers());
+    @GetMapping()
+    public String getAllUsers(Model model, Authentication authentication) {
+        UsersDetails usersDetails = (UsersDetails)authentication.getPrincipal();
+        model.addAttribute("user", usersServices.findUsersById(usersDetails.getUsers().getId()));
+        model.addAttribute("rols", roleRepository.findAll());
+        model.addAttribute("newUser", new Users());
+        model.addAttribute("users",usersServices.findAllUsers());
         return "admin";
     }
 
@@ -35,13 +44,13 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/{id}/edit")
-    public String editUser(@PathVariable("id") int id, Model model){
-        Users user = usersServices.findUsersById(id).orElse(null);
-        model.addAttribute("user",user);
-        model.addAttribute("rols",roleRepository.findAll());
-        return "edit";
-    }
+//    @GetMapping("/{id}/edit")
+//    public String editUser(@PathVariable("id") int id, Model model){
+//        Users user = usersServices.findUsersById(id).orElse(null);
+//        model.addAttribute("user",user);
+//        model.addAttribute("rols",roleRepository.findAll());
+//        return "edit";
+//    }
 
     @PatchMapping("/{id}/edit")
     public String updateUser(@ModelAttribute("user") Users usersUpdate, @PathVariable("id") int id,
@@ -52,14 +61,16 @@ public class AdminController {
         return"redirect:/admin";
     }
 
-    @GetMapping("/new")
-    public String newUser(Model model){
-        model.addAttribute("newUser",new Users());
-        return "new";
-    }
+//    @GetMapping("/new")
+//    public String newUser(Model model){
+//        model.addAttribute("newUser",new Users());
+//        return "new";
+//    }
 
     @PostMapping("/new")
-    public String create(@ModelAttribute("newUser") Users user){
+    public String create(@ModelAttribute("newUser") Users user,@RequestParam(value = "newRols", defaultValue = "2") List<Role> inputRoles){
+        Set<Role> roles = new HashSet<>(inputRoles);
+        user.setRoles(roles);
         usersServices.saveUser(user);
         return "redirect:/admin";
     }

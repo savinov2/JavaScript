@@ -19,7 +19,7 @@ public class UsersControler {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UsersDetails usersDetails = (UsersDetails)authentication.getPrincipal();
         model.addAttribute("user", usersDetails.getUsers());
-        System.out.println(usersDetails.getUsers().getUsername() +  " " + usersDetails.getUsers().getYearOfBirth());
+        System.out.println(usersDetails.getUsers().getFirstName() +  " " + usersDetails.getUsers().getYearOfBirth());
         return "user";
     }
 
