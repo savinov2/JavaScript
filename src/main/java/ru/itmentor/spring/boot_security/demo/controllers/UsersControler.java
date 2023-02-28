@@ -10,17 +10,14 @@ import ru.itmentor.spring.boot_security.demo.security.UsersDetails;
 
 
 @Controller
-@RequestMapping("/user")
-public class UsersControler {
-
-
-    @GetMapping("")
-    public String showUser(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UsersDetails usersDetails = (UsersDetails)authentication.getPrincipal();
-        model.addAttribute("user", usersDetails.getUsers());
-        System.out.println(usersDetails.getUsers().getFirstName() +  " " + usersDetails.getUsers().getYearOfBirth());
-        return "user";
+public class UsersControler{
+    @GetMapping("/admin")
+    public String authAdminRole() {
+        return "admin";
     }
 
+    @GetMapping("/user")
+    public String authUserRole() {
+        return "user";
+    }
 }

@@ -1,43 +1,292 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>admin panel</title>
+    <title>Admin panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <div>
-        <table border="1" cellpadding="5">
-            <thead>
-            <th>ID</th>
-            <th>UserName</th>
-            <th>Password</th>
-            <th>Roles</th>
-            </thead>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.getId()}" />
-                    <td th:text="${user.getUsername()}"/>
-                    <td th:text="${user.getYearOfBirth()}" />
-                    <td th:text="${user.getPassword()}" />
+    <body>
+        <header class="bg-dark p-3 text-white d-flex justify-content-between">
+                <div>
+                    <div id="auth-user"> </div>
+               </div>
+            <form method="get" action="/logout">
+                <button class="bg-transparent text-secondary border-0">
+                    Logout
+                </button>
+            </form>
+        </header>
 
-                    <td>
-                        <th:block th:each="rol : ${user.getRoles()}" th:text="${rol.getName() + ' ' }"/>
-                    </td>
-                    <td>
-                        <form th:method="DELETE" th:action="@{/admin/{id}(id=${user.getId()})}">
-                            <input TYPE="submit" value="delete">
-                        </form>
-                    </td>
-                    <td>
-                        <form th:method="GET" th:action="@{/admin/{id}/edit(id=${user.getId()})}">
-                            <input TYPE="submit" value="edit">
-                        </form>
-                    </td>
-                </tr>
-        </table>
-        <br>
-        <a href="/admin/new">New User</a>
-        <br>
-        <a href="/logout">logout</a>
-    </div>
-</body>
+        <main>
+            <div class="row">
+                <div class="col-2 bg-light" >
+                    <div class="nav p-4 bg-white flex-column nav-pills " id="v-pills-tab" role="tablist"
+                         aria-orientation="vertical">
+                        <button class="mb-1 nav-link active text-start" id="v-pills-admin-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-admin"
+                                type="button" role="tab" aria-controls="v-pills-admin" aria-selected="true">
+                            Admin
+                        </button>
+                        <button class="mb-1 nav-link text-start" id="v-pills-user_details-tab" data-bs-toggle="pill"
+                                data-bs-target="#v-pills-user_details"
+                                type="button" role="tab" aria-controls="v-pills-user_details" aria-selected="false">
+                            User
+                        </button>
+                    </div>
+                </div>
+<!--                         Admin-->
+                <div class="col-8">
+                    <div class="tab-content" id="v-pills-tabContent" >
+                        <h2> Admin panel</h2>
+<!--                            User list-->
+                        <div class="tab-pane fade show active text-start" id="v-pills-admin" role="tabpanel" aria-labelledby="v-pills-admin-tab">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="user-list-tab" data-bs-toggle="tab" data-bs-target="#user-list-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">User list</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="new-user-tab" data-bs-toggle="tab" data-bs-target="#new-user-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">New User</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="user-list-tab-pane" role="tabpanel" aria-labelledby="user-list-tab" tabindex="0">
+                                        <table class="table table" >
+                                            <tr>
+                                                <th colspan="7">All users</th>
+                                            </tr>
+
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">First Name</th>
+                                                    <th scope="col">Last Name</th>
+                                                    <th scope="col">Age</th>
+                                                    <th scope="col">Email</th>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">Edit</th>
+                                                    <th scope="col">Delete</th>
+                                                </tr>
+
+                                            <tbody class="tbodyAdminUserList">
+                                            </tbody>
+                                        </table>
+                                    </div>
+        <!--                            New User-->
+                                    <div class="tab-pane fade" id="new-user-tab-pane" role="tabpanel" aria-labelledby="new-user-tab" tabindex="0">
+                                        <div>
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="new-firstName" class="row justify-content-center fw-bold">First name</label>
+                                                    <input type="text" class="form-control" id="new-firstname" >
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="new-lastName" class="row justify-content-center fw-bold">Last name</label>
+                                                    <input type="text" class="form-control" id="new-lastname" >
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="new-age" class="row justify-content-center fw-bold">Age</label>
+                                                    <input type="number" class="form-control" id="new-age" >
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="new-email" class="row justify-content-center fw-bold">Email</label>
+                                                    <input type="email" class="form-control" id="new-email" >
+                                                </div>
+                                            </div>
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="new-password" class="row justify-content-center fw-bold">Password</label>
+                                                    <input type="password" class="form-control" id="new-password" >
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6 my-2">
+                                                    <label for="newRole" class="row justify-content-center fw-bold">Email</label>
+                                                    <select class="form-select form-select-sm" multiple aria-label="multiple select example" id="newRole" name="newRols">
+
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-auto mt-3">
+                                                    <button id="new-user-btn" type="submit" class="btn btn-success">Add new user</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+
+                        </div>
+<!--                        USER-->
+                        <div class="tab-pane fade text-start" id="v-pills-user_details" role="tabpanel"
+                             aria-labelledby="v-pills-user_details-tab">
+                            <table class="table" >
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Last Name</th>
+                                    <th scope="col">Age</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                </tr>
+                                </thead>
+                                <tbody id="user-admin-body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+
+        <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog ">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel" >Edit User</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset disabled>
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <label for="edit-id" class="row justify-content-center fw-bold">ID</label>
+                                    <input type="text" class="form-control" id="edit-id" >
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 my-3">
+                                <label for="edit-firstName" class="row justify-content-center fw-bold">First name</label>
+                                <input type="text" class="form-control" id="edit-firstName" >
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 my-3">
+                                <label for="edit-lastName" class="row justify-content-center fw-bold">Last name</label>
+                                <input type="text" class="form-control" id="edit-lastName" >
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 my-3">
+                                <label for="edit-age" class="row justify-content-center fw-bold">Age</label>
+                                <input type="number" class="form-control" id="edit-age">
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 my-3">
+                                <label for="edit-email" class="row justify-content-center fw-bold">Email</label>
+                                <input type="email" class="form-control" id="edit-email">
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 my-3">
+                                <label for="edit-role" class="row justify-content-center fw-bold">Role</label>
+                                <select class="form-select form-select-sm" multiple aria-label="multiple select example" id="edit-role" name="editRols" >
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="edit-submit-btn" type="button" class="btn btn-primary">Edit</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+            <div class="modal-dialog ">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel2" >Delete</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset disabled>
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <label for="delete-id" class="row justify-content-center fw-bold">ID</label>
+                                    <input type="text" class="form-control" id="delete-id">
+                                </div>
+                            </div>
+
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-8 my-3">
+                                    <label for="delete-firstName" class="row justify-content-center fw-bold">First name</label>
+                                    <input type="text" class="form-control" id="delete-firstName">
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-8 my-3">
+                                    <label for="delete-lastName" class="row justify-content-center fw-bold">Last name</label>
+                                    <input type="text" class="form-control" id="delete-lastName">
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-8 my-3">
+                                    <label for="delete-age" class="row justify-content-center fw-bold">Age</label>
+                                    <input type="number" class="form-control" id="delete-age">
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-8 my-3">
+                                    <label for="delete-email" class="row justify-content-center fw-bold">Email</label>
+                                    <input type="email" class="form-control" id="delete-email" >
+                                </div>
+                            </div>
+
+                            <div class="row justify-content-center">
+                                <div class="col-md-8 my-3">
+                                    <label for="delete-role" class="row justify-content-center fw-bold">Role</label>
+                                    <select class="form-select form-select-sm" multiple aria-label="multiple select example" id="delete-role" name="editRols" >
+
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="delete-submit" type="button" class="btn btn-primary">Delete</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+        <script src="/app.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    </body>
+
 </html>

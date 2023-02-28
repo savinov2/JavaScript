@@ -1,5 +1,7 @@
 package ru.itmentor.spring.boot_security.demo.controllers;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -11,13 +13,13 @@ import ru.itmentor.spring.boot_security.demo.repositories.RoleRepository;
 import ru.itmentor.spring.boot_security.demo.security.UsersDetails;
 import ru.itmentor.spring.boot_security.demo.services.UsersServices;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("/admin")
+@RestController
 public class AdminController {
     private final UsersServices usersServices;
     private final RoleRepository roleRepository;
@@ -27,22 +29,66 @@ public class AdminController {
         this.usersServices = usersServices;
         this.roleRepository = roleRepository;
     }
-
-    @GetMapping()
-    public String getAllUsers(Model model, Authentication authentication) {
-        UsersDetails usersDetails = (UsersDetails)authentication.getPrincipal();
-        model.addAttribute("user", usersServices.findUsersById(usersDetails.getUsers().getId()));
-        model.addAttribute("rols", roleRepository.findAll());
-        model.addAttribute("newUser", new Users());
-        model.addAttribute("users",usersServices.findAllUsers());
-        return "admin";
+    @GetMapping("/admin/all")
+    public List<Users> getAllUsers() {
+        return usersServices.findAllUsers();
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable("id") int id){
+    @GetMapping("/admin/user")
+    public Users getUser(Authentication authentication) {
+        UsersDetails user =(UsersDetails)authentication.getPrincipal();
+        return user.getUsers();
+    }
+
+    @GetMapping("/admin/{id}")
+    public Users getUserById(@PathVariable("id") Integer id){
+        return usersServices.findUsersById(id).orElse(null);
+    }
+
+    @GetMapping("/admin/roles")
+    public List<Role> getUserById(){
+        return roleRepository.findAll();
+    }
+
+    @PatchMapping("/admin/edit/{id}")
+    public Users editUser(@RequestBody Users editUser,
+                          @PathVariable("id") Integer id){
+        usersServices.updateUserByIdAndUsers(editUser,id);
+        return usersServices.findUsersById(id).orElse(null);
+    }
+
+    @DeleteMapping("/admin/delete/{id}")
+    public void deleteUser(@PathVariable("id") Integer id){
         usersServices.deleteUser(id);
-        return "redirect:/admin";
     }
+
+    @PostMapping("/admin/save")
+    public Users saveUser(@RequestBody Users user){
+        usersServices.saveUser(user);
+        return user;
+    }
+
+    @GetMapping("/user/this")
+    public Users getAuthUser(Authentication authentication) {
+        UsersDetails user =(UsersDetails)authentication.getPrincipal();
+        return user.getUsers();
+    }
+
+//    @GetMapping()
+//    public String getAllUsers(Model model, Authentication authentication) {
+//        UsersDetails usersDetails = (UsersDetails)authentication.getPrincipal();
+//        model.addAttribute("user", usersServices.findUsersById(usersDetails.getUsers().getId()));
+//        model.addAttribute("rols", roleRepository.findAll());
+//        model.addAttribute("newUser", new Users());
+//        model.addAttribute("users",usersServices.findAllUsers());
+//        return "admin";
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public String deleteUser(@PathVariable("id") int id){
+//        usersServices.deleteUser(id);
+//        return "redirect:/admin";
+//    }
 
 //    @GetMapping("/{id}/edit")
 //    public String editUser(@PathVariable("id") int id, Model model){
@@ -52,14 +98,14 @@ public class AdminController {
 //        return "edit";
 //    }
 
-    @PatchMapping("/{id}/edit")
-    public String updateUser(@ModelAttribute("user") Users usersUpdate, @PathVariable("id") int id,
-                             @RequestParam(value = "editRols", defaultValue = "2") List<Role> inputRoles){
-        Set<Role> roles = new HashSet<>(inputRoles);
-        usersUpdate.setRoles(roles);
-        usersServices.updateUserByIdAndUsers(usersUpdate,id);
-        return"redirect:/admin";
-    }
+//    @PatchMapping("/{id}/edit")
+//    public String updateUser(@ModelAttribute("user") Users usersUpdate, @PathVariable("id") int id,
+//                             @RequestParam(value = "editRols", defaultValue = "2") List<Role> inputRoles){
+//        Set<Role> roles = new HashSet<>(inputRoles);
+//        usersUpdate.setRoles(roles);
+//        usersServices.updateUserByIdAndUsers(usersUpdate,id);
+//        return"redirect:/admin";
+//    }
 
 //    @GetMapping("/new")
 //    public String newUser(Model model){
@@ -67,12 +113,12 @@ public class AdminController {
 //        return "new";
 //    }
 
-    @PostMapping("/new")
-    public String create(@ModelAttribute("newUser") Users user,@RequestParam(value = "newRols", defaultValue = "2") List<Role> inputRoles){
-        Set<Role> roles = new HashSet<>(inputRoles);
-        user.setRoles(roles);
-        usersServices.saveUser(user);
-        return "redirect:/admin";
-    }
+//    @PostMapping("/new")
+//    public String create(@ModelAttribute("newUser") Users user,@RequestParam(value = "newRols", defaultValue = "2") List<Role> inputRoles){
+//        Set<Role> roles = new HashSet<>(inputRoles);
+//        user.setRoles(roles);
+//        usersServices.saveUser(user);
+//        return "redirect:/admin";
+//    }
 
 }
